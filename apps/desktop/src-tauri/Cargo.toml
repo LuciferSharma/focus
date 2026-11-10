@@ -1,0 +1,17 @@
+[package]
+name = "focuswatch"
+version = "0.1.0"
+description = "FocusWatch Desktop Companion App"
+authors = ["FocusWatch Developer"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = ["tray-icon"] }
+tauri-plugin-sql = { version = "2.0", features = ["sqlite"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+warp = "0.3"

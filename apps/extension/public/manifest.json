@@ -1,0 +1,84 @@
+{
+  "manifest_version": 3,
+  "name": "FocusWatch Tactical Blocker & Companion",
+  "version": "1.2.0",
+  "description": "Tactical website blocker, DOM sanitizer, 1-click tab stash, proof grabber, eye shield, and Shadow DOM note drawer for FocusWatch.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "tabs",
+    "webNavigation",
+    "storage",
+    "alarms",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://127.0.0.1:47777/*"
+  ],
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FocusWatch Tactical Control",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "options_page": "options.html",
+  "commands": {
+    "stash_tabs": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Stash all open tabs to FocusWatch Task Backlog"
+    },
+    "capture_proof": {
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
+      "description": "Capture Deliverable Proof Screenshot"
+    },
+    "toggle_notes": {
+      "suggested_key": {
+        "default": "Alt+N"
+      },
+      "description": "Toggle Tactical Note-Taker Drawer"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/index.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "blocked.html",
+        "src/content/index.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

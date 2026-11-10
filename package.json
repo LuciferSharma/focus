@@ -1,0 +1,28 @@
+{
+  "name": "focuswatch-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FocusWatch — Local-first deep-work monitor, website blocker, and accountability widget",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LuciferSharma/focus.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.20.0",
+  "scripts": {
+    "setup": "pnpm build:packages && pnpm build:extension",
+    "dev:desktop": "pnpm --filter @focuswatch/desktop dev",
+    "dev:extension": "pnpm --filter @focuswatch/extension dev",
+    "build:packages": "pnpm --filter \"./packages/*\" build",
+    "build:desktop": "pnpm --filter @focuswatch/desktop build",
+    "build:extension": "pnpm --filter @focuswatch/extension build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.5"
+  }
+}

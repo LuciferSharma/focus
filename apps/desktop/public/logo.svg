@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="128" fill="#030712"/>
+  <!-- Outer Tactical Shield -->
+  <path d="M256 64L384 112V240C384 320 328 392 256 424C184 392 128 320 128 240V112L256 64Z"
+        stroke="#10b981" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="#070b14"/>
+  <!-- Inner Target Reticle -->
+  <circle cx="256" cy="230" r="64" stroke="#06b6d4" stroke-width="20" stroke-dasharray="8 8"/>
+  <circle cx="256" cy="230" r="24" fill="#10b981"/>
+  <!-- Crosshair Lines -->
+  <line x1="256" y1="130" x2="256" y2="150" stroke="#10b981" stroke-width="16" stroke-linecap="round"/>
+  <line x1="256" y1="310" x2="256" y2="330" stroke="#10b981" stroke-width="16" stroke-linecap="round"/>
+  <line x1="156" y1="230" x2="176" y2="230" stroke="#10b981" stroke-width="16" stroke-linecap="round"/>
+  <line x1="336" y1="230" x2="356" y2="230" stroke="#10b981" stroke-width="16" stroke-linecap="round"/>
+</svg>

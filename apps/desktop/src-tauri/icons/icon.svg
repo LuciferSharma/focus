@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101a2c"/>
+      <stop offset="1" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="shieldFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2233"/>
+      <stop offset="1" stop-color="#06101c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background tile -->
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <rect x="1.5" y="1.5" width="125" height="125" rx="26.5" stroke="#1e293b" stroke-width="3"/>
+
+  <!-- Ambient glow -->
+  <circle cx="64" cy="60" r="52" fill="url(#glow)"/>
+
+  <!-- Tactical shield -->
+  <path d="M64 13L105 28V62C105 87 87.5 106.5 64 117C40.5 106.5 23 87 23 62V28L64 13Z"
+        fill="url(#shieldFill)" stroke="#10b981" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Reticle ring -->
+  <circle cx="64" cy="60" r="21" stroke="#22d3ee" stroke-width="6.5"/>
+
+  <!-- Crosshair ticks -->
+  <line x1="64" y1="30" x2="64" y2="38" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+  <line x1="64" y1="82" x2="64" y2="90" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+  <line x1="34" y1="60" x2="42" y2="60" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+  <line x1="86" y1="60" x2="94" y2="60" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Focus core -->
+  <circle cx="64" cy="60" r="9" fill="#10b981"/>
+  <circle cx="61" cy="57" r="3" fill="#a7f3d0" fill-opacity="0.9"/>
+</svg>

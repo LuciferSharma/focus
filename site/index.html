@@ -3,32 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FocusWatch: block distractions, prove you did the work</title>
-  <meta name="description" content="A free, open-source focus app and browser extension. Blocks distracting sites during a focus session, then asks if you actually finished what you planned. Runs entirely on your computer." />
-  <meta property="og:title" content="FocusWatch: block distractions, prove you did the work" />
-  <meta property="og:description" content="Free, open-source focus sessions with website blocking and honest check-ins. No accounts, nothing leaves your computer." />
+  <title>FocusWatch: not now, YouTube.</title>
+  <meta name="description" content="A free, open-source focus app and browser extension. Blocks distracting sites during a focus session, then asks if you actually finished. Runs entirely on your computer." />
+  <meta property="og:title" content="FocusWatch: not now, YouTube." />
+  <meta property="og:description" content="Free, open-source focus sessions with website blocking and honest check-ins. No accounts. Nothing leaves your computer." />
   <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#060807" />
+  <meta name="theme-color" content="#050706" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="progress" aria-hidden="true"><span data-progress></span></div>
 
-  <!-- ─────────────── NAV ─────────────── -->
+  <!-- ───────── NAV ───────── -->
   <header class="nav">
     <a class="brand" href="#top" aria-label="FocusWatch home">
       <img src="logo.svg" alt="" width="28" height="28" />
       <span>FocusWatch</span>
     </a>
     <nav class="nav-links" aria-label="Sections">
+      <a href="#how">How it works</a>
       <a href="#try">Try it</a>
       <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-      <a href="#why">Why</a>
       <a href="#updates">Updates</a>
     </nav>
     <div class="nav-actions">
@@ -37,76 +38,178 @@
         <span>Star</span>
         <span class="star-count" data-stars>—</span>
       </a>
-      <a class="btn btn-small" href="#install">Install</a>
+      <a class="btn btn-small magnetic" href="#install">Install</a>
     </div>
   </header>
 
   <main id="top">
-    <!-- ─────────────── HERO ─────────────── -->
+    <!-- ───────── HERO ───────── -->
     <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow reveal" style="--d:0"><span class="dot-live"></span> Free &amp; open source · Windows, Mac &amp; Linux</p>
-        <h1 class="reveal" style="--d:1">Do the thing<br />you <em>said</em> you'd do.</h1>
-        <p class="lede reveal" style="--d:2">
-          FocusWatch blocks YouTube, Instagram and the rest while you work, then asks one honest question when the timer ends: <strong>did you finish what you planned?</strong>
-        </p>
-        <div class="hero-ctas reveal" style="--d:3">
-          <a class="btn" href="#install">Install for free <span aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="https://github.com/LuciferSharma/focus" target="_blank" rel="noopener">
-            View on GitHub · <span data-stars>—</span> ★
-          </a>
-        </div>
-        <ul class="hero-facts reveal" style="--d:4">
-          <li><b>0</b> accounts</li>
-          <li><b>0</b> servers</li>
-          <li><b>100%</b> on your computer</li>
-        </ul>
+      <p class="eyebrow intro" style="--d:0"><span class="dot-live"></span> Free &amp; open source</p>
+
+      <h1 class="hero-title intro" style="--d:1" aria-label="Not now, YouTube.">
+        <span class="line">Not now,</span>
+        <span class="line"><span class="rotator" data-rotator aria-hidden="true"><span class="rot-word">YouTube</span><span class="rot-strike"></span></span><span class="period">.</span></span>
+      </h1>
+
+      <p class="hero-sub intro" style="--d:2">Blocks distractions while you work.<br class="br-d" /> Then asks if you actually finished.</p>
+
+      <div class="hero-ctas intro" style="--d:3">
+        <a class="btn magnetic" href="#install">Install free <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost magnetic" href="https://github.com/LuciferSharma/focus" target="_blank" rel="noopener">★ <span data-stars>—</span> on GitHub</a>
       </div>
 
-      <!-- Session HUD: mirrors the real app's floating timer -->
-      <aside class="hud reveal" style="--d:2" aria-label="Example focus session">
-        <div class="hud-top">
-          <span class="hud-label">Focus session</span>
-          <span class="hud-status"><span class="dot-live"></span> Running</span>
-        </div>
-        <div class="ring-wrap">
-          <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
-            <circle class="ring-track" cx="100" cy="100" r="88" />
-            <circle class="ring-ticks" cx="100" cy="100" r="96" />
-            <circle class="ring-progress" cx="100" cy="100" r="88" />
-          </svg>
-          <div class="ring-center">
-            <span class="ring-time" data-timer>44:59</span>
-            <span class="ring-sub">left of 45 min</span>
+      <!-- Live app mock -->
+      <div class="stage intro" style="--d:4" data-stage>
+        <div class="float-chip chip-a"><span class="c-rose">●</span> instagram.com blocked</div>
+        <div class="float-chip chip-b"><span class="c-em">✓</span> music.youtube.com allowed</div>
+        <div class="float-chip chip-c">🔥 6-day streak</div>
+
+        <div class="app" data-tilt>
+          <div class="app-bar">
+            <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="app-title"><img src="logo.svg" alt="" width="14" height="14" /> FocusWatch</span>
+            <span class="app-live"><span class="dot-live"></span> Session running</span>
           </div>
+          <div class="app-body">
+            <div class="app-timer">
+              <div class="ring-wrap">
+                <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+                  <circle class="ring-track" cx="100" cy="100" r="88" />
+                  <circle class="ring-ticks" cx="100" cy="100" r="96" />
+                  <circle class="ring-progress" cx="100" cy="100" r="88" data-ring />
+                </svg>
+                <div class="ring-center">
+                  <span class="ring-time" data-timer>44:59</span>
+                  <span class="ring-sub">left</span>
+                </div>
+              </div>
+              <div class="app-task">
+                <span class="label">Working on</span>
+                <b>Write the report intro</b>
+              </div>
+            </div>
+
+            <div class="app-sites">
+              <div class="sites-head">
+                <span class="label">Blocked right now</span>
+                <span class="label">Attempts <b class="c-rose" data-hero-attempts>0</b></span>
+              </div>
+              <ul data-hero-sites>
+                <li data-host="youtube.com"><i class="fav" style="--c:#ff3b3b">▶</i>youtube.com<span class="state">Blocked</span></li>
+                <li data-host="instagram.com"><i class="fav" style="--c:#e1306c">◎</i>instagram.com<span class="state">Blocked</span></li>
+                <li data-host="reddit.com"><i class="fav" style="--c:#ff5700">●</i>reddit.com<span class="state">Blocked</span></li>
+                <li data-host="x.com"><i class="fav" style="--c:#e7e9ea">𝕏</i>x.com<span class="state">Blocked</span></li>
+                <li data-host="music.youtube.com" class="is-allowed"><i class="fav" style="--c:#34d399">♪</i>music.youtube.com<span class="state">Allowed</span></li>
+              </ul>
+              <div class="bars" aria-hidden="true">
+                <i style="--h:35%"></i><i style="--h:60%"></i><i style="--h:45%"></i><i style="--h:80%"></i><i style="--h:70%"></i><i style="--h:95%"></i><i style="--h:55%"></i><i style="--h:88%"></i><i style="--h:40%"></i><i style="--h:75%"></i><i style="--h:65%"></i><i style="--h:92%"></i>
+              </div>
+            </div>
+          </div>
+          <div class="toast" data-toast role="status"><span class="toast-icon">🛑</span><span data-toast-text>Blocked youtube.com</span></div>
         </div>
-        <div class="hud-task">
-          <span class="hud-label">Working on</span>
-          <p>Write the quarterly report intro</p>
-        </div>
-        <div class="hud-stats">
-          <div><span class="hud-label">Blocked</span><b>6 sites</b></div>
-          <div><span class="hud-label">Attempts</span><b data-attempts>0</b></div>
-        </div>
-        <p class="hud-hint">↓ Try opening a distracting site below</p>
-      </aside>
+      </div>
     </section>
 
-    <!-- ─────────────── TRY IT ─────────────── -->
+    <!-- ───────── MARQUEE ───────── -->
+    <section class="marquee" aria-label="Sites FocusWatch blocks">
+      <div class="marquee-track">
+        <div class="marquee-row" data-marquee>
+          <span>YouTube</span><span>Instagram</span><span>Reddit</span><span>X</span><span>TikTok</span><span>Facebook</span><span>LinkedIn</span><span>Twitch</span><span>Netflix</span><span>9GAG</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── STORY (scroll-pinned) ───────── -->
+    <section id="how" class="story" data-story>
+      <div class="story-sticky">
+        <div class="story-left">
+          <p class="kicker">How it works</p>
+          <h2 class="split">One session.<br /><em>Four beats.</em></h2>
+          <ol class="beats" data-beats>
+            <li class="is-on"><span>01</span><b>Plan</b><small>Say what you'll finish.</small></li>
+            <li><span>02</span><b>Block</b><small>Distractions go dark.</small></li>
+            <li><span>03</span><b>Check in</b><small>Did you actually do it?</small></li>
+            <li><span>04</span><b>Review</b><small>See your real focus.</small></li>
+          </ol>
+          <div class="story-bar"><span data-story-bar></span></div>
+        </div>
+
+        <div class="screen" data-screen>
+          <!-- 1. Plan -->
+          <div class="scene scene-plan is-on" data-scene="0">
+            <p class="scene-label">New focus session</p>
+            <div class="field"><span data-typer></span><i class="caret"></i></div>
+            <div class="chips">
+              <span>25 min</span><span class="pick">45 min</span><span>90 min</span>
+            </div>
+            <div class="toggle-row"><span class="toggle is-on"><i></i></span> Block distracting sites</div>
+            <button class="start" type="button" tabindex="-1">Start session →</button>
+          </div>
+
+          <!-- 2. Block -->
+          <div class="scene scene-block" data-scene="1">
+            <div class="mini-browser">
+              <div class="mini-bar"><span class="lights"><i></i><i></i><i></i></span><span class="mini-url">youtube.com</span></div>
+              <div class="mini-page">
+                <div class="yt-skeleton"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="slam">
+                  <span class="slam-tag">Blocked during focus</span>
+                  <b>youtube.com</b>
+                  <small>You're writing the report intro.</small>
+                  <span class="slam-btn">← Back to work</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Check in -->
+          <div class="scene scene-check" data-scene="2">
+            <p class="scene-label">⏰ Time's up</p>
+            <h3>Did you finish the report intro?</h3>
+            <div class="answers">
+              <span class="ans ans-yes">✓ Yes</span><span class="ans">◐ Partly</span><span class="ans">✕ No</span>
+            </div>
+            <div class="cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#000" stroke-width="1.5"/></svg></div>
+            <div class="confetti" data-confetti aria-hidden="true"></div>
+          </div>
+
+          <!-- 4. Review -->
+          <div class="scene scene-review" data-scene="3">
+            <div class="review-top">
+              <div><span class="scene-label">Focus score</span><b class="score" data-score>0</b></div>
+              <div class="streak">🔥 6 days</div>
+            </div>
+            <div class="review-bars">
+              <div style="--h:42%"><i></i><span>M</span></div>
+              <div style="--h:68%"><i></i><span>T</span></div>
+              <div style="--h:55%"><i></i><span>W</span></div>
+              <div style="--h:85%"><i></i><span>T</span></div>
+              <div style="--h:74%"><i></i><span>F</span></div>
+              <div style="--h:30%"><i></i><span>S</span></div>
+              <div style="--h:92%" class="today"><i></i><span>S</span></div>
+            </div>
+            <div class="review-legend"><span><i class="lg-em"></i>Deep work</span><span><i class="lg-rose"></i>Distracted</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── TRY IT ───────── -->
     <section id="try" class="section try">
-      <div class="section-head">
-        <p class="kicker">01 — Try it</p>
-        <h2>You're in a focus session. <em>Go on, try YouTube.</em></h2>
-        <p class="section-sub">This is what the extension does in your real browser. Click a site, or type one in.</p>
+      <div class="section-head center">
+        <p class="kicker">Try it</p>
+        <h2 class="split">Go on. <em>Try to procrastinate.</em></h2>
       </div>
 
-      <div class="browser" data-browser>
+      <div class="browser spot" data-browser>
         <div class="browser-bar">
           <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
           <form class="address" data-address-form>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1a4 4 0 00-4 4v2H3v8h10V7h-1V5a4 4 0 00-4-4zm-2 6V5a2 2 0 114 0v2H6z"/></svg>
             <label class="sr-only" for="address-input">Website address</label>
-            <input id="address-input" data-address type="text" autocomplete="off" spellcheck="false" placeholder="Type a site, e.g. reddit.com" />
+            <input id="address-input" data-address type="text" autocomplete="off" spellcheck="false" placeholder="Type any site and press Enter" />
           </form>
           <span class="ext-icon" title="FocusWatch extension"><img src="logo.svg" alt="" width="18" height="18" /></span>
         </div>
@@ -119,209 +222,165 @@
         </div>
         <div class="viewport" data-viewport aria-live="polite">
           <div class="vp-idle">
-            <p class="mono">FocusWatch is watching.</p>
-            <p>Pick a site above to see what happens.</p>
+            <div class="radar" aria-hidden="true"><i></i></div>
+            <p>Pick a site. FocusWatch is watching.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────── VIDEO ─────────────── -->
-    <!--
-      To add your video, put a YouTube link or an .mp4 path in data-video, e.g.
-      data-video="https://www.youtube.com/watch?v=XXXXXXXX"  or  data-video="demo.mp4"
-    -->
+    <!-- ───────── VIDEO ───────── -->
+    <!-- To add your video: put a YouTube link or an .mp4 path in data-video below. -->
     <section id="video" class="section video-section">
-      <div class="video-frame" data-video="">
+      <div class="video-frame spot" data-video="">
         <div class="video-placeholder">
           <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></div>
-          <p class="mono">2-minute walkthrough</p>
-          <p class="video-soon">Video coming soon</p>
+          <p class="video-soon">Walkthrough video <em>coming soon</em></p>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────── FEATURES ─────────────── -->
+    <!-- ───────── FEATURES ───────── -->
     <section id="features" class="section">
       <div class="section-head">
-        <p class="kicker">02 — Features</p>
-        <h2>An app to plan the work. <em>An extension to protect it.</em></h2>
+        <p class="kicker">Features</p>
+        <h2 class="split">Small tools. <em>Big difference.</em></h2>
       </div>
 
-      <div class="bento">
-        <article class="card card-wide card-accent">
-          <span class="card-tag">App</span>
-          <h3>Sessions with a promise attached</h3>
-          <p>Write what you'll get done, pick a time, press start. When it ends, answer honestly: <b>Yes</b>, <b>Partly</b> or <b>No</b>, and how hard it was.</p>
-          <div class="verdict" aria-hidden="true">
-            <span class="v-yes">✓ Yes</span><span class="v-partly">◐ Partly</span><span class="v-no">✕ No</span>
+      <div class="tiles">
+        <article class="tile spot tile-wide">
+          <div class="viz viz-promise" aria-hidden="true"><span>✓ Yes</span><span>◐ Partly</span><span>✕ No</span></div>
+          <h3>Sessions with a promise</h3>
+          <p>Say what you'll finish. Answer honestly at the end.</p>
+        </article>
+
+        <article class="tile spot">
+          <div class="viz viz-keys" aria-hidden="true" data-keys>
+            <div class="keyrow"><kbd>Alt</kbd><kbd>S</kbd></div>
+            <span class="key-label">Stash all tabs</span>
           </div>
+          <h3>Shortcuts</h3>
+          <p>Stash tabs, grab proof, take notes.</p>
         </article>
-        <article class="card">
-          <span class="card-tag tag-ext">Extension</span>
-          <h3>Blocks the usual suspects</h3>
-          <p>YouTube, Instagram, Reddit, X, Facebook, LinkedIn. Your list, your rules.</p>
+
+        <article class="tile spot">
+          <div class="viz viz-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <h3>Music keeps playing</h3>
+          <p>YouTube Music &amp; Studio stay open.</p>
         </article>
-        <article class="card">
-          <span class="card-tag tag-ext">Extension</span>
-          <h3>Music still plays</h3>
-          <p>YouTube Music and YouTube Studio stay open, so your playlist and your channel aren't collateral damage.</p>
-        </article>
-        <article class="card">
-          <span class="card-tag">App</span>
+
+        <article class="tile spot">
+          <div class="viz viz-heat" aria-hidden="true" data-heat></div>
           <h3>Where the day went</h3>
-          <p>Real work vs. distraction, your top apps and sites, and a heatmap of your best focus hours.</p>
-          <div class="heat" aria-hidden="true"></div>
+          <p>Your best focus hours, mapped.</p>
         </article>
-        <article class="card">
-          <span class="card-tag">App</span>
-          <h3>A timer that stays on top</h3>
-          <p>A small floating widget keeps the clock in sight without stealing focus from what you're typing.</p>
+
+        <article class="tile spot">
+          <div class="viz viz-tabs" aria-hidden="true">
+            <div class="tabstrip"><i></i><i></i><i></i><i></i><i></i></div>
+            <span class="nudge">Slow down — 10 tab switches in 60s</span>
+          </div>
+          <h3>Tab-hop nudges</h3>
+          <p>A heads-up when you're bouncing around.</p>
         </article>
-        <article class="card card-wide">
-          <span class="card-tag tag-ext">Extension</span>
-          <h3>Three shortcuts worth learning</h3>
-          <ul class="keys">
-            <li><span><kbd>Alt</kbd><kbd>S</kbd></span> Save every open tab to your to-do list, and close them</li>
-            <li><span><kbd>Alt</kbd><kbd>⇧</kbd><kbd>C</kbd></span> Screenshot your work as proof for the session</li>
-            <li><span><kbd>Alt</kbd><kbd>N</kbd></span> Open a notepad on any page</li>
-          </ul>
+
+        <article class="tile spot">
+          <div class="viz viz-widget" aria-hidden="true"><div class="widget"><span class="dot-live"></span>32:08</div></div>
+          <h3>Always-on-top timer</h3>
+          <p>The clock stays in sight.</p>
         </article>
-        <article class="card">
-          <span class="card-tag">App</span>
-          <h3>To-dos, sorted</h3>
-          <p>Colour-coded categories. Paste a whole list and it splits it into tasks.</p>
-        </article>
-        <article class="card">
-          <span class="card-tag tag-ext">Extension</span>
-          <h3>Gentle nudges</h3>
-          <p>A heads-up when you're tab-hopping too fast, and a reminder to rest your eyes every 50 minutes.</p>
-        </article>
-        <article class="card card-wide">
-          <span class="card-tag">App</span>
+
+        <article class="tile spot">
+          <div class="viz viz-ai" aria-hidden="true"><span class="ai-btn" data-ai-btn>Copy summary</span></div>
           <h3>Bring your own AI</h3>
-          <p>One click copies a session summary to paste into ChatGPT or Claude. FocusWatch never calls an AI itself.</p>
+          <p>Paste a summary into ChatGPT or Claude.</p>
+        </article>
+
+        <article class="tile spot tile-wide tile-local">
+          <div class="viz viz-local" aria-hidden="true">
+            <div class="pc">💻<span>your computer</span></div>
+            <div class="cut"><i></i><b>✕</b></div>
+            <div class="cloud">☁️<span>the cloud</span></div>
+          </div>
+          <h3>Nothing leaves your computer</h3>
+          <p>No account. No servers. No tracking.</p>
         </article>
       </div>
+
+      <div class="stats" data-stats>
+        <div><b data-count="0">0</b><span>accounts</span></div>
+        <div><b data-count="0">0</b><span>servers</span></div>
+        <div><b data-count="100" data-suffix="%">0</b><span>on your machine</span></div>
+        <div><b data-count="3">0</b><span>keyboard shortcuts</span></div>
+        <div><b>MIT</b><span>licensed</span></div>
+      </div>
     </section>
 
-    <!-- ─────────────── HOW IT WORKS ─────────────── -->
-    <section id="how" class="section">
-      <div class="section-head">
-        <p class="kicker">03 — How it works</p>
-        <h2>Three small pieces. <em>All on your computer.</em></h2>
-      </div>
-
-      <div class="flow" aria-label="How the pieces connect">
-        <div class="node node-app">
-          <span class="node-icon">🖥️</span>
-          <h3>The app</h3>
-          <p>Where you plan sessions, keep your to-dos and see your stats.</p>
-        </div>
-        <div class="wire" aria-hidden="true"><span class="packet"></span><span class="packet p2"></span><em>session started</em></div>
-        <div class="node node-link">
-          <span class="node-icon">🔗</span>
-          <h3>The connector</h3>
-          <p>A tiny background program that passes messages along. Starts by itself.</p>
-        </div>
-        <div class="wire wire-rev" aria-hidden="true"><span class="packet"></span><span class="packet p2"></span><em>block these sites</em></div>
-        <div class="node node-ext">
-          <span class="node-icon">🧩</span>
-          <h3>The extension</h3>
-          <p>Lives in Chrome or Edge, and does the blocking.</p>
-        </div>
-      </div>
-      <p class="flow-note">Optional: <a href="https://activitywatch.net" target="_blank" rel="noopener">ActivityWatch</a> (free) records which apps you use, so the "where did my time go" charts fill in.</p>
-
-      <ol class="steps">
-        <li><span class="step-n">1</span><h3>Plan</h3><p>"Write the intro. 45 minutes."</p></li>
-        <li><span class="step-n">2</span><h3>Block</h3><p>Distracting sites go dark until the timer ends.</p></li>
-        <li><span class="step-n">3</span><h3>Check in</h3><p>Did you finish? Yes, partly, or no.</p></li>
-        <li><span class="step-n">4</span><h3>Review</h3><p>See your real focus hours, streaks and patterns.</p></li>
-      </ol>
-    </section>
-
-    <!-- ─────────────── WHY ─────────────── -->
-    <section id="why" class="section why">
-      <div class="section-head">
-        <p class="kicker">04 — Why it exists</p>
-      </div>
-      <blockquote class="pull">
-        Time trackers tell you where your hours went. <em>None of them ask if you got anything done.</em>
-      </blockquote>
+    <!-- ───────── WHY ───────── -->
+    <section class="section why" data-why>
+      <p class="kicker">Why it exists</p>
+      <blockquote class="pull" data-words>Time trackers tell you where your hours went. None of them ask if you got anything done.</blockquote>
       <div class="principles">
-        <div>
-          <h3><span>01</span> Output over hours</h3>
-          <p>Three focused hours that produce nothing aren't a good day. Every session starts with what you'll deliver and ends with whether you did.</p>
-        </div>
-        <div>
-          <h3><span>02</span> Friction, not a prison</h3>
-          <p>Sometimes you really do need YouTube. You can unlock a site, but you have to type out why and wait. Usually that's enough to change your mind.</p>
-        </div>
-        <div>
-          <h3><span>03</span> Your data is yours</h3>
-          <p>No account, no cloud, no analytics. Your sessions never leave your computer, because a focus tool shouldn't be one more thing watching you.</p>
-        </div>
-        <div>
-          <h3><span>04</span> Don't rebuild what works</h3>
-          <p>ActivityWatch already tracks apps brilliantly. FocusWatch builds on top of it instead of reinventing it, and adds the part it's missing: accountability.</p>
-        </div>
+        <span>Output over hours</span>
+        <span>Friction, not a prison</span>
+        <span>Your data stays home</span>
+        <span>Built on ActivityWatch</span>
       </div>
     </section>
 
-    <!-- ─────────────── UPDATES ─────────────── -->
+    <!-- ───────── UPDATES ───────── -->
     <section id="updates" class="section">
       <div class="section-head">
-        <p class="kicker">05 — Updates</p>
-        <h2>What's new.</h2>
+        <p class="kicker">Updates</p>
+        <h2 class="split">Shipping <em>in the open.</em></h2>
       </div>
       <div class="updates">
-        <ol class="timeline">
-          <li>
+        <div class="milestones">
+          <article class="ms spot">
             <time>Nov 2026</time>
-            <h3>Open-sourced 🎉 <span class="badge">v0.1.0</span></h3>
-            <p>FocusWatch is now public under the MIT licence, with a plain-English guide and a copy-paste prompt that lets an AI assistant install it for you.</p>
-          </li>
-          <li>
+            <h3>Open-sourced <span class="badge">v0.1.0</span></h3>
+            <p>Public under MIT, with a one-paste AI installer.</p>
+          </article>
+          <article class="ms spot">
             <time>Nov 2026</time>
-            <h3>Temporary unlocks that actually work</h3>
-            <p>Unlocking a blocked site for 5, 10 or 15 minutes now lets you through, then blocks it again when the time's up, even in tabs that are already open.</p>
-          </li>
-          <li>
+            <h3>Unlocks that work</h3>
+            <p>5–15 minute unlocks that re-block on time.</p>
+          </article>
+          <article class="ms spot">
             <time>Before launch</time>
-            <h3>Pause, reflect, prove it</h3>
-            <p>Pause and resume sessions, rate how hard they were, attach proof screenshots, and save all your tabs with one shortcut.</p>
-          </li>
-        </ol>
-        <div class="commits">
+            <h3>Pause &amp; reflect</h3>
+            <p>Pause sessions, rate difficulty, attach proof.</p>
+          </article>
+        </div>
+        <div class="commits spot">
           <div class="commits-head">
-            <span class="mono">Latest on GitHub</span>
+            <span class="mono"><span class="dot-live"></span> Live from GitHub</span>
             <a href="https://github.com/LuciferSharma/focus/commits/main" target="_blank" rel="noopener">All commits →</a>
           </div>
-          <ul data-commits>
-            <li class="commit-loading mono">Loading…</li>
-          </ul>
+          <ul data-commits><li class="commit-loading mono">Loading…</li></ul>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────── INSTALL ─────────────── -->
+    <!-- ───────── INSTALL ───────── -->
     <section id="install" class="section install">
-      <div class="section-head">
-        <p class="kicker">06 — Install</p>
-        <h2>Up and running in <em>about ten minutes.</em></h2>
-        <p class="section-sub">You'll need <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>, <a href="https://git-scm.com" target="_blank" rel="noopener">Git</a>, and Chrome or Edge. All free.</p>
+      <div class="section-head center">
+        <p class="kicker">Install</p>
+        <h2 class="split">Running in <em>ten minutes.</em></h2>
+        <p class="section-sub">Needs <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>, <a href="https://git-scm.com" target="_blank" rel="noopener">Git</a>, and Chrome or Edge.</p>
       </div>
 
-      <div class="tabs" role="tablist" aria-label="Install method">
-        <button role="tab" aria-selected="true" aria-controls="tab-ai" id="tab-ai-btn" data-tab="tab-ai">✨ Let an AI do it</button>
-        <button role="tab" aria-selected="false" aria-controls="tab-manual" id="tab-manual-btn" data-tab="tab-manual" tabindex="-1">🛠️ Do it yourself</button>
-      </div>
+      <div class="install-card spot">
+        <div class="tabs" role="tablist" aria-label="Install method">
+          <span class="tab-glider" aria-hidden="true"></span>
+          <button role="tab" aria-selected="true" aria-controls="tab-ai" id="tab-ai-btn" data-tab="tab-ai">✨ Let an AI do it</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-manual" id="tab-manual-btn" data-tab="tab-manual" tabindex="-1">🛠️ Do it yourself</button>
+        </div>
 
-      <div class="tab-panel" id="tab-ai" role="tabpanel" aria-labelledby="tab-ai-btn">
-        <p>Using Claude Code, Cursor or Codex? Open it in the folder where you want FocusWatch, paste this in, and it does the rest. It'll walk you through the one step it can't do: adding the extension to your browser.</p>
-        <div class="code">
-          <button class="copy" type="button" data-copy="#agent-prompt">Copy prompt</button>
+        <div class="tab-panel" id="tab-ai" role="tabpanel" aria-labelledby="tab-ai-btn">
+          <p>Paste into Claude Code, Cursor or Codex. It installs everything and walks you through adding the extension.</p>
+          <div class="code">
+            <button class="copy" type="button" data-copy="#agent-prompt">Copy prompt</button>
 <pre id="agent-prompt">Install FocusWatch (https://github.com/LuciferSharma/focus) on this machine. Follow these steps in order, and stop and tell me if any step fails.
 
 1. Check prerequisites by running `node -v`, `git --version`, and `pnpm -v`.
@@ -346,77 +405,59 @@
    - Pin the FocusWatch icon. Its popup should show ONLINE once the app is running.
 
 When finished, summarize what was installed, where it is, and how to start and stop FocusWatch.</pre>
+          </div>
         </div>
-      </div>
 
-      <div class="tab-panel" id="tab-manual" role="tabpanel" aria-labelledby="tab-manual-btn" hidden>
-        <ol class="manual">
-          <li>
-            <h3>Download and set up</h3>
-            <p>Open a terminal (on Windows: press <kbd>Win</kbd>, type <b>PowerShell</b>, press Enter) and run:</p>
-            <div class="code">
-              <button class="copy" type="button" data-copy="#cmds">Copy</button>
+        <div class="tab-panel" id="tab-manual" role="tabpanel" aria-labelledby="tab-manual-btn" hidden>
+          <ol class="manual">
+            <li>
+              <h3>Download &amp; set up</h3>
+              <div class="code">
+                <button class="copy" type="button" data-copy="#cmds">Copy</button>
 <pre id="cmds">git clone https://github.com/LuciferSharma/focus.git
 cd focus
 corepack enable
 pnpm install
 pnpm setup</pre>
-            </div>
-          </li>
-          <li>
-            <h3>Add the extension</h3>
-            <p>Go to <code>chrome://extensions</code>, switch on <b>Developer mode</b>, click <b>Load unpacked</b>, and choose <code>focus/apps/extension/dist</code>.</p>
-          </li>
-          <li>
-            <h3>Open FocusWatch</h3>
-            <p>Double-click <code>launcher/FocusWatch.vbs</code>. The extension icon should switch to <b>ONLINE</b>. On Mac or Linux, see the <a href="https://github.com/LuciferSharma/focus#mac-and-linux" target="_blank" rel="noopener">two-line setup</a>.</p>
-          </li>
-        </ol>
+              </div>
+            </li>
+            <li>
+              <h3>Add the extension</h3>
+              <p><code>chrome://extensions</code> → <b>Developer mode</b> → <b>Load unpacked</b> → pick <code>focus/apps/extension/dist</code></p>
+            </li>
+            <li>
+              <h3>Open FocusWatch</h3>
+              <p>Double-click <code>launcher/FocusWatch.vbs</code>. Mac or Linux? <a href="https://github.com/LuciferSharma/focus#mac-and-linux" target="_blank" rel="noopener">Two commands</a>.</p>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
-    <!-- ─────────────── FAQ ─────────────── -->
+    <!-- ───────── FAQ ───────── -->
     <section class="section faq">
-      <div class="section-head">
-        <p class="kicker">07 — Questions</p>
-      </div>
       <div class="faq-list">
-        <details>
-          <summary>Is it really free?</summary>
-          <p>Yes. It's open source under the MIT licence. No trial, no paid tier, no account.</p>
-        </details>
-        <details>
-          <summary>Does it send my data anywhere?</summary>
-          <p>No. Everything stays on your computer. There's no server to send it to.</p>
-        </details>
-        <details>
-          <summary>Does it work on Mac or Linux?</summary>
-          <p>Yes, with a couple of extra terminal commands. The one-click launcher is Windows-only for now.</p>
-        </details>
-        <details>
-          <summary>Can I choose which sites get blocked?</summary>
-          <p>Yes. Edit the block list in the app. YouTube Music and YouTube Studio are allowed by default.</p>
-        </details>
-        <details>
-          <summary>What if I genuinely need a blocked site?</summary>
-          <p>Ask for a temporary unlock from the block page. Type out why, wait a few seconds, and the site opens for 5, 10 or 15 minutes.</p>
-        </details>
+        <details><summary>Is it really free?</summary><p>Yes. MIT licensed. No trial, no paid tier, no account.</p></details>
+        <details><summary>Does it send my data anywhere?</summary><p>No. There's no server to send it to.</p></details>
+        <details><summary>Mac or Linux?</summary><p>Works, with two terminal commands. The one-click launcher is Windows-only for now.</p></details>
+        <details><summary>What if I really need a blocked site?</summary><p>Request a temporary unlock. Type why, wait a few seconds, get 5–15 minutes.</p></details>
       </div>
     </section>
 
-    <!-- ─────────────── CTA ─────────────── -->
-    <section class="cta">
-      <h2>Your next 45 minutes <em>could be your best.</em></h2>
+    <!-- ───────── CTA ───────── -->
+    <section class="cta spot">
+      <div class="cta-ring" aria-hidden="true"></div>
+      <h2 class="split">Start your <em>first session.</em></h2>
       <div class="hero-ctas">
-        <a class="btn" href="#install">Install FocusWatch</a>
-        <a class="btn btn-ghost" href="https://github.com/LuciferSharma/focus" target="_blank" rel="noopener">★ Star on GitHub · <span data-stars>—</span></a>
+        <a class="btn magnetic" href="#install">Install FocusWatch</a>
+        <a class="btn btn-ghost magnetic" href="https://github.com/LuciferSharma/focus" target="_blank" rel="noopener">★ Star · <span data-stars>—</span></a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="brand"><img src="logo.svg" alt="" width="22" height="22" /><span>FocusWatch</span></div>
-    <p>Free and open source under the <a href="https://github.com/LuciferSharma/focus/blob/main/LICENSE" target="_blank" rel="noopener">MIT licence</a>.</p>
+    <p>Open source · <a href="https://github.com/LuciferSharma/focus/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a></p>
     <nav aria-label="Footer">
       <a href="https://github.com/LuciferSharma/focus" target="_blank" rel="noopener">GitHub</a>
       <a href="https://github.com/LuciferSharma/focus/issues" target="_blank" rel="noopener">Report a bug</a>

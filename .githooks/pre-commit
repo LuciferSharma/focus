@@ -1,0 +1,24 @@
+#!/bin/sh
+# Blocks commits that contain secrets. Enable with:
+#   git config core.hooksPath .githooks
+
+GITLEAKS="$(command -v gitleaks 2>/dev/null)"
+if [ -z "$GITLEAKS" ] && [ -n "$LOCALAPPDATA" ]; then
+  WINGET_LINK="$(cygpath -u "$LOCALAPPDATA" 2>/dev/null)/Microsoft/WinGet/Links/gitleaks.exe"
+  [ -x "$WINGET_LINK" ] && GITLEAKS="$WINGET_LINK"
+fi
+
+if [ -z "$GITLEAKS" ]; then
+  echo "pre-commit: gitleaks not found, skipping secret scan (CI will still scan)."
+  echo "            Install: https://github.com/gitleaks/gitleaks#installing"
+  exit 0
+fi
+
+"$GITLEAKS" git --pre-commit --staged --redact --no-banner .
+status=$?
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "pre-commit: gitleaks found a possible secret. Commit blocked."
+  echo "            Remove it, or if it's a false positive add it to .gitleaksignore."
+  exit 1
+fi

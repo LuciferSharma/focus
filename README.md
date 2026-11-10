@@ -251,6 +251,14 @@ pnpm tauri dev
 
 Issues and pull requests are welcome. Please run `pnpm test` before opening a PR.
 
+The repo includes a pre-commit hook that runs [gitleaks](https://github.com/gitleaks/gitleaks) so secrets never get committed. Enable it once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+CI runs the same gitleaks scan on every push and pull request.
+
 ## License
 
 [MIT](LICENSE)

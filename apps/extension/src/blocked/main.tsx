@@ -99,12 +99,34 @@ export const BlockedPage: React.FC = () => {
 
   const isFrictionMatched = frictionInput.trim().toLowerCase() === expectedFrictionSentence.trim().toLowerCase();
 
+  // Ask the background worker to let this site through for the chosen minutes, then open it.
+  // Without the grant, the blocking rules would send us straight back to this page.
+  const grantAndOpen = () => {
+    const open = () => {
+      window.location.href = blockedUrl;
+    };
+    if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+      open();
+      return;
+    }
+    chrome.runtime.sendMessage(
+      {
+        type: 'GRANT_TEMP_UNLOCK',
+        payload: { url: blockedUrl, minutes: unlockMinutes, reason: unlockReason.trim() },
+      },
+      () => {
+        void chrome.runtime.lastError;
+        open();
+      }
+    );
+  };
+
   const handleUnlockSubmit = () => {
     if (!isFrictionMatched || !unlockReason.trim()) return;
 
     const delaySec = getDelayDuration();
     if (delaySec === 0) {
-      window.location.href = blockedUrl;
+      grantAndOpen();
       return;
     }
 
@@ -113,7 +135,7 @@ export const BlockedPage: React.FC = () => {
       setDelayCountdown((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(interval);
-          window.location.href = blockedUrl;
+          grantAndOpen();
           return null;
         }
         return prev - 1;

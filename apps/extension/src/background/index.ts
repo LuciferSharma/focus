@@ -4,8 +4,17 @@ import { captureDeliverableProof } from './screenshot';
 import { initVelocityTracker } from './velocityTracker';
 import { initTabAgingEngine } from './tabAging';
 import { DrawerMode, getDrawerMode, isRestrictedUrl, toggleDrawerMode } from '../shared/noteDrawerState';
+import {
+  activeUnlocks,
+  addUnlock,
+  effectiveExceptions,
+  matchBlockedDomain,
+  sessionKeyOf,
+} from './tempUnlock';
 
 const BRIDGE_URL = 'http://127.0.0.1:47777';
+const TEMP_UNLOCKS_KEY = 'temporaryUnlocks';
+const UNLOCK_EXPIRY_ALARM_PREFIX = 'temp_unlock_expiry:';
 let pollIntervalTimer: ReturnType<typeof setInterval> | null = null;
 let consecutiveFailures = 0;
 let previousSessionActive = false;
@@ -70,6 +79,56 @@ async function autoDiscardAndMuteBlockedTabs(blockedDomains: string[], allowedEx
       }
     }
   } catch {}
+}
+
+/** The session's allowed exceptions plus any sites unlocked from the block page. */
+async function exceptionsForSession(session: any): Promise<string[]> {
+  const allowed: string[] = Array.isArray(session?.allowed_exceptions) ? session.allowed_exceptions : [];
+  try {
+    const stored = await chrome.storage.local.get([TEMP_UNLOCKS_KEY]);
+    return effectiveExceptions(allowed, activeUnlocks(stored[TEMP_UNLOCKS_KEY], sessionKeyOf(session), Date.now()));
+  } catch {
+    return allowed;
+  }
+}
+
+/** Unlocks a blocked site for a few minutes, then lets the expiry alarm block it again. */
+async function grantTemporaryUnlock(payload: { url?: string; minutes?: number; reason?: string }) {
+  const { activeSession: session } = await chrome.storage.local.get(['activeSession']);
+  if (!session || !session.active || !Array.isArray(session.blocked_domains)) {
+    return { success: true, reason: 'no_active_session' };
+  }
+
+  const domain = matchBlockedDomain(payload.url || '', session.blocked_domains);
+  if (!domain) return { success: false, error: 'invalid_url' };
+
+  const stored = await chrome.storage.local.get([TEMP_UNLOCKS_KEY]);
+  const { list, added } = addUnlock(
+    stored[TEMP_UNLOCKS_KEY],
+    {
+      domain,
+      minutes: Number(payload.minutes) || 5,
+      reason: String(payload.reason || '').slice(0, 500),
+      sessionKey: sessionKeyOf(session),
+    },
+    Date.now()
+  );
+  await chrome.storage.local.set({ [TEMP_UNLOCKS_KEY]: list });
+  chrome.alarms.create(`${UNLOCK_EXPIRY_ALARM_PREFIX}${domain}`, { when: added.expiresAt + 500 });
+
+  // Apply the new rules before replying, so the page can navigate straight to the site.
+  await updateDeclarativeNetRequestRules(session.blocked_domains, await exceptionsForSession(session));
+  const minutes = Math.round((added.expiresAt - Date.now()) / 60_000);
+  await pushTelemetryLog(`Temporary unlock: ${domain} for ${minutes} min. Reason: "${added.reason}"`);
+  return { success: true, domain, expiresAt: added.expiresAt };
+}
+
+/** When an unlock runs out, send any tabs still open on that site back to the block page. */
+async function reblockAfterUnlockExpiry(): Promise<void> {
+  await syncSessionAndRules();
+  const { activeSession: session } = await chrome.storage.local.get(['activeSession']);
+  if (!session || !session.active || session.paused || !Array.isArray(session.blocked_domains)) return;
+  await autoDiscardAndMuteBlockedTabs(session.blocked_domains, await exceptionsForSession(session));
 }
 
 async function pushTelemetryLog(entry: string): Promise<void> {
@@ -184,12 +243,13 @@ export async function syncSessionAndRules(): Promise<void> {
       }
 
       if (isActive && Array.isArray(data.blocked_domains)) {
+        const exceptions = await exceptionsForSession(data);
         if (!previousSessionActive) {
-          await autoDiscardAndMuteBlockedTabs(data.blocked_domains, data.allowed_exceptions || []);
+          await autoDiscardAndMuteBlockedTabs(data.blocked_domains, exceptions);
         }
         previousSessionActive = true;
 
-        await updateDeclarativeNetRequestRules(data.blocked_domains, data.allowed_exceptions || []);
+        await updateDeclarativeNetRequestRules(data.blocked_domains, exceptions);
         await chrome.storage.local.set({ activeSession: data, bridgeConnected: true });
         await handleTimeUp(data);
         schedulePolling(2000);
@@ -303,6 +363,8 @@ chrome.alarms.create('sync_bridge_alarm', { periodInMinutes: 0.25 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'sync_bridge_alarm' || alarm.name === TIME_UP_ALARM) {
     syncSessionAndRules();
+  } else if (alarm.name.startsWith(UNLOCK_EXPIRY_ALARM_PREFIX)) {
+    reblockAfterUnlockExpiry();
   }
 });
 
@@ -338,7 +400,7 @@ if (typeof chrome !== 'undefined' && chrome.webNavigation) {
       const blockedRedirectUrl = chrome.runtime.getURL('blocked.html');
       if (details.url.startsWith(blockedRedirectUrl)) return;
 
-      if (isDomainBlocked(details.url, session.blocked_domains, session.allowed_exceptions || []) && details.tabId) {
+      if (isDomainBlocked(details.url, session.blocked_domains, await exceptionsForSession(session)) && details.tabId) {
         chrome.tabs.update(details.tabId, {
           url: `${blockedRedirectUrl}?url=${encodeURIComponent(details.url)}`,
         });
@@ -361,7 +423,7 @@ if (typeof chrome !== 'undefined' && chrome.tabs) {
         const session = data.activeSession;
         if (!session || !session.active || session.paused || !Array.isArray(session.blocked_domains)) return;
 
-        if (isDomainBlocked(targetUrl, session.blocked_domains, session.allowed_exceptions || [])) {
+        if (isDomainBlocked(targetUrl, session.blocked_domains, await exceptionsForSession(session))) {
           console.log(`[FocusWatch SW] 🛑 Intercepted onUpdated on tab #${tabId} to ${targetUrl}`);
           await chrome.tabs.update(tabId, {
             url: `${blockedRedirectUrl}?url=${encodeURIComponent(targetUrl)}`,
@@ -387,6 +449,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         pushTelemetryLog(`FORCE_RESYNC Error: ${err?.message || err}`);
         sendResponse({ status: 'error', error: String(err) });
       });
+    return true; // Keep channel open for async response
+  } else if (message.type === 'GRANT_TEMP_UNLOCK') {
+    grantTemporaryUnlock(message.payload || {})
+      .then((res) => sendResponse(res))
+      .catch((err) => sendResponse({ success: false, error: String(err) }));
     return true; // Keep channel open for async response
   } else if (message.type === 'LOG_ATTEMPT') {
     fetch(`${BRIDGE_URL}/attempts`, {

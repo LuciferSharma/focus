@@ -110,8 +110,10 @@ flowchart TD
     D -->|No| E["🛑 Block page<br/>shows what you're working on<br/>and counts the attempt"]
     E --> F{"What do you do?"}
     F -->|"Go back to work"| G["↩️ Back to your work tab"]
-    F -->|"I really need it"| H["✍️ Type why you need it,<br/>plus a set sentence"]
-    H --> I["⏳ Wait 15–30 seconds<br/>before you can go on"]
+    F -->|"I really need it"| H["✍️ Type why you need it,<br/>a set sentence, and pick<br/>5, 10 or 15 minutes"]
+    H --> I["⏳ Wait 15–30 seconds"]
+    I --> J["🔓 The site opens for<br/>the minutes you picked"]
+    J --> K["🔒 Time's up: blocked again,<br/>even in tabs already open"]
 
     classDef good fill:#d1fae5,stroke:#047857,color:#1f2937
     classDef stop fill:#fee2e2,stroke:#b91c1c,color:#1f2937

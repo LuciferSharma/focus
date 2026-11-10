@@ -1,5 +1,7 @@
 # FocusWatch
 
+🌐 **[Website & live demo](https://lucifersharma.github.io/focus/)** · [Install](#install) · [How it works](#how-it-works)
+
 **Blocks your distractions during a focus session, then shows you where your hours actually went, all on your own machine. I've used it daily for [X] months: [N] sessions and [H] hours of deep work logged.**
 
 <!-- Replace the [X]/[N]/[H] placeholders above with your real numbers, and add a screenshot or GIF at docs/images/demo.gif -->

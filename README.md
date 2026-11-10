@@ -5,88 +5,164 @@
 <!-- Replace the [X]/[N]/[H] placeholders above with your real numbers, and add a screenshot or GIF at docs/images/demo.gif -->
 ![FocusWatch dashboard and extension](docs/images/demo.gif)
 
-It's a local-first deep-work tracker, website blocker, and accountability companion. No accounts, no cloud, no telemetry.
+FocusWatch is a free focus app for your computer. You tell it what you're about to work on and for how long. While the timer runs, it blocks sites like YouTube, Instagram and Reddit, and afterwards it asks whether you actually finished what you planned.
 
-FocusWatch has two parts that work together:
+No sign-up, no subscription. Everything stays on your computer.
 
-- **Desktop app** — start focus sessions, track tasks, and review where your time actually went.
-- **Browser extension** (Chrome / Edge) — blocks distracting sites while a session is running and adds a few focus tools to the browser.
+---
 
-They talk to each other through a small local bridge server on `127.0.0.1:47777`. Nothing leaves your computer.
+## What you get
 
-## Features
+### 🖥️ The app
 
-**Desktop app**
-- Focus sessions with a planned duration, an expected output, pause/resume, and an end-of-session check on whether you actually delivered it
-- Task list with categories and batch import from Markdown / plain-text lists
-- Today dashboard: deep work vs. distracted time, focus score, top apps and sites, full activity log
-- Analytics: deep-work heatmap, behavior patterns, per-category insights, streaks
-- Always-on-top floating timer widget
-- Copy-ready AI prompts for session summaries and task planning — paste them into any AI assistant you like (FocusWatch itself makes no AI or network calls)
-- Diagnostics screen showing ActivityWatch, bridge, and extension status
+- **Focus sessions.** Write what you'll get done ("finish the intro slides"), pick a time, press start. When the time is up, say honestly whether you did it.
+- **A to-do list** with colour-coded categories. Paste in a whole list at once and it splits it into tasks.
+- **Your day at a glance.** How much time went to real work and how much to distractions, plus your top apps and websites.
+- **Trends over time.** A calendar-style chart of your best focus hours, your streaks, and which kinds of work you do best.
+- **A small floating timer** that stays on top of your other windows.
+- **Ready-made AI prompts.** One click copies a summary of your session that you can paste into ChatGPT, Claude or any other assistant. FocusWatch never contacts an AI itself.
 
-**Browser extension**
-- Blocks your distraction list during a session, with a block page that reminds you what you're working on
-- Built-in exceptions for `music.youtube.com` and `studio.youtube.com`
-- Tab stash (`Alt+S`) — save all open tabs to your task backlog and close them
-- Proof capture (`Alt+Shift+C`) — screenshot your work as evidence for the session
-- Note drawer (`Alt+N`) — quick notes on any page
-- Warning when you switch tabs too fast during a session
-- 20-20-20 eye-break reminder, and automatic sleeping of tabs left idle for 30+ minutes
+### 🧩 The browser extension (Chrome or Edge)
 
-## Tech stack
+- **Blocks distracting sites** while a session is running and reminds you what you're meant to be doing.
+- **Keeps YouTube Music and YouTube Studio open**, so music and creator work aren't blocked.
+- **`Alt + S`** saves all your open tabs to your to-do list and closes them.
+- **`Alt + Shift + C`** takes a screenshot of your work as proof for the session.
+- **`Alt + N`** opens a quick notepad on any page.
+- **Nudges you** when you're jumping between tabs too fast, and reminds you to rest your eyes every 50 minutes.
 
-| Layer | Tech |
-|---|---|
-| Desktop UI | React 19, TypeScript, Vite 6, Tailwind CSS, Zustand, Recharts |
-| Browser extension | Manifest V3, `declarativeNetRequest` blocking, React popup, Shadow DOM content scripts |
-| Local bridge | Node.js HTTP server (zero dependencies) on `127.0.0.1:47777` |
-| Activity tracking | [ActivityWatch](https://activitywatch.net) REST API |
-| Shared logic | pnpm workspace packages: domain rules, focus score engine, event normalizer, Zod types |
-| Native shell *(experimental)* | Tauri 2 (Rust) + SQLite |
-| Tests | Vitest (73 tests) |
+---
 
-## How it fits together
+## How it works
+
+FocusWatch has three pieces. You only ever look at the first two; the third runs quietly in the background.
 
 ```mermaid
 flowchart LR
-    subgraph Browser["Chrome / Edge"]
-        EXT["FocusWatch extension<br/>blocks sites · stash · notes · proof"]
+    YOU(["🙂 You"])
+
+    subgraph PC["💻 Your computer"]
+        APP["🖥️ <b>FocusWatch app</b><br/>timer · to-do list · stats"]
+        LINK["🔗 <b>Connector</b><br/>passes messages between<br/>the app and the browser"]
+        EXT["🧩 <b>Browser extension</b><br/>blocks sites · saves tabs<br/>· notes · screenshots"]
+        AW["📊 <b>ActivityWatch</b> (optional)<br/>notes which apps<br/>you're using"]
     end
 
-    subgraph Local["Your machine (127.0.0.1)"]
-        UI["Desktop UI<br/>localhost:1420"]
-        BR["Local bridge<br/>:47777"]
-        AW["ActivityWatch<br/>:5600"]
-        ST[("Browser local storage<br/>+ bridge-state.json")]
-    end
+    YOU -->|"start a session"| APP
+    APP <-->|"session started / ended"| LINK
+    LINK <-->|"what to block,<br/>what you saved"| EXT
+    AW -.->|"which apps you used"| APP
 
-    UI -- "start / pause / finish session" --> BR
-    EXT -- "polls active session & block list" --> BR
-    EXT -- "block attempts, stashed tabs,<br/>screenshots, session finish" --> BR
-    BR -- "pending events" --> UI
-    AW -- "window & AFK events" --> UI
-    UI --- ST
+    classDef you fill:#fde68a,stroke:#b45309,color:#1f2937
+    classDef main fill:#d1fae5,stroke:#047857,color:#1f2937
+    classDef helper fill:#e0e7ff,stroke:#4338ca,color:#1f2937
+    classDef optional fill:#f3f4f6,stroke:#9ca3af,color:#374151,stroke-dasharray: 5 5
+    class YOU you
+    class APP,EXT main
+    class LINK helper
+    class AW optional
 ```
 
-The desktop UI owns the data. The bridge is a small relay that holds the current session state, so the extension knows what to block and anything captured in the browser (tabs, notes, proof screenshots) makes it back to the app.
+- **The app** is where you plan and review your work.
+- **The extension** lives in your browser and does the blocking.
+- **The connector** is a tiny background program that lets the two talk to each other. It starts automatically when you open FocusWatch.
+- **ActivityWatch** is a separate free app. It's optional, but without it the "where did my time go" charts stay empty.
 
-## Requirements
+### A focus session, start to finish
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor You
+    participant App as 🖥️ FocusWatch app
+    participant Conn as 🔗 Connector
+    participant Ext as 🧩 Browser extension
+
+    You->>App: Start: write the report, 45 minutes
+    App->>Conn: Session started, block these sites
+    Ext->>Conn: Anything new? (checks every few seconds)
+    Conn-->>Ext: Yes, block YouTube, Instagram, Reddit…
+
+    Note over You,Ext: You work. Distracting sites are blocked.
+
+    You->>Ext: Press Alt + S to save your tabs
+    Ext->>Conn: Here are the saved tabs
+    Conn-->>App: Add them to the to-do list
+
+    Note over App: ⏰ 45 minutes are up
+    App->>You: Did you finish the report?
+    You->>App: Yes / Partly / No, and how hard was it?
+    App->>Conn: Session over, stop blocking
+    Conn-->>Ext: Unblock everything
+    App->>You: Updated stats for your day
+```
+
+### What happens when you open a blocked site
+
+```mermaid
+flowchart TD
+    A["You type youtube.com"] --> B{"Is a focus<br/>session running?"}
+    B -->|No| OK["✅ The site opens normally"]
+    B -->|Yes| C{"Is it on your<br/>block list?"}
+    C -->|No| OK
+    C -->|Yes| D{"Is it YouTube Music<br/>or YouTube Studio?"}
+    D -->|Yes| OK
+    D -->|No| E["🛑 Block page<br/>shows what you're working on<br/>and counts the attempt"]
+    E --> F{"What do you do?"}
+    F -->|"Go back to work"| G["↩️ Back to your work tab"]
+    F -->|"I really need it"| H["✍️ Type why you need it,<br/>plus a set sentence"]
+    H --> I["⏳ Wait 15–30 seconds<br/>before you can go on"]
+
+    classDef good fill:#d1fae5,stroke:#047857,color:#1f2937
+    classDef stop fill:#fee2e2,stroke:#b91c1c,color:#1f2937
+    class OK,G good
+    class E stop
+```
+
+Getting past the block is possible, but slow on purpose, so you stop and think before giving in. Each attempt is counted, so at the end of the day you can see how often you reached for a distraction.
+
+### Your data stays on your computer
+
+```mermaid
+flowchart LR
+    subgraph PC["💻 Your computer: everything lives here"]
+        APP["🖥️ App"] --- DATA[("📁 Your sessions,<br/>tasks and notes")]
+        EXT["🧩 Extension"] --- APP
+        AW["📊 ActivityWatch"] --- APP
+    end
+    NET["☁️ The internet<br/>/ any company server"]
+    PC -. "❌ nothing is sent" .- NET
+
+    classDef cloud fill:#f3f4f6,stroke:#9ca3af,color:#6b7280,stroke-dasharray: 5 5
+    class NET cloud
+```
+
+There are no accounts, analytics or cloud sync. FocusWatch never sends your data anywhere.
+
+---
+
+## Install
+
+### What you need first
 
 | | |
 |---|---|
-| **OS** | Windows 10 / 11. The one-click launcher is Windows-only — see [macOS / Linux](#macos--linux) for manual steps. |
-| **Node.js** | 20 or newer — <https://nodejs.org> |
-| **pnpm** | Comes with Node through Corepack (`corepack enable`), or `npm install -g pnpm` |
-| **Git** | <https://git-scm.com> |
-| **Browser** | Google Chrome or Microsoft Edge |
-| **ActivityWatch** *(recommended)* | <https://activitywatch.net> — powers automatic app and window tracking for the dashboard. Sessions, tasks, and blocking work without it, but the activity charts will be empty. |
+| 💻 **Computer** | Windows 10 or 11. Mac and Linux work too, with [a couple of extra steps](#mac-and-linux). |
+| 🌐 **Browser** | Google Chrome or Microsoft Edge |
+| 🟩 **Node.js** | Free. Download the "LTS" version from [nodejs.org](https://nodejs.org) and install it like any other program. |
+| 🐙 **Git** | Free. Download it from [git-scm.com](https://git-scm.com). |
+| 📊 **ActivityWatch** *(optional)* | Free. Download it from [activitywatch.net](https://activitywatch.net) if you want the "where did my time go" charts. |
 
-## Installation
+### The steps at a glance
 
-### Option A: Let an AI coding agent install it
+```mermaid
+flowchart LR
+    S1["1️⃣ Install<br/>Node.js + Git"] --> S2["2️⃣ Download<br/>FocusWatch"] --> S3["3️⃣ Run the<br/>setup commands"] --> S4["4️⃣ Add the extension<br/>to your browser"] --> S5["5️⃣ Open<br/>FocusWatch 🎉"]
+```
 
-If you use an AI coding agent (Claude Code, Cursor, Codex, etc.), open it in the folder where you want FocusWatch installed and paste this prompt:
+### Easiest: let an AI assistant do it
+
+If you use an AI coding assistant such as Claude Code, Cursor or Codex, open it in the folder where you want FocusWatch and paste in the prompt below. It does steps 2, 3 and 5 for you and walks you through step 4.
 
 ```text
 Install FocusWatch (https://github.com/LuciferSharma/focus) on this machine. Follow these steps in order, and stop and tell me if any step fails.
@@ -115,150 +191,167 @@ Install FocusWatch (https://github.com/LuciferSharma/focus) on this machine. Fol
 When finished, summarize what was installed, where it is, and how to start and stop FocusWatch.
 ```
 
-### Option B: Install manually
+### Or do it yourself
 
-**1. Clone and build**
+**Step 1: Install Node.js and Git** from the links in the table above.
+
+**Step 2 and 3: Download FocusWatch and set it up.** Open a terminal (on Windows, press `Win`, type **PowerShell**, press Enter), then paste these lines one at a time:
 
 ```powershell
 git clone https://github.com/LuciferSharma/focus.git
 cd focus
-corepack enable        # only needed once, if you don't already have pnpm
+corepack enable
 pnpm install
-pnpm setup             # builds the shared packages and the browser extension
+pnpm setup
 ```
 
-**2. Load the browser extension**
+This takes a few minutes the first time. When it's done you'll have a `focus` folder in your home folder.
 
-1. Open `chrome://extensions` (or `edge://extensions` in Edge).
-2. Turn on **Developer mode** (top-right toggle).
-3. Click **Load unpacked** and select the `apps/extension/dist` folder inside the repo.
-4. Pin the FocusWatch icon to your toolbar.
+**Step 4: Add the extension to your browser.**
 
-**3. Start the app**
+1. In Chrome, go to `chrome://extensions` (in Edge, `edge://extensions`).
+2. Turn on **Developer mode** with the switch in the top-right corner.
+3. Click **Load unpacked**.
+4. Open the `focus` folder, then `apps` → `extension` → `dist`, and click **Select folder**.
+5. Click the puzzle-piece icon in the toolbar and pin FocusWatch so it's always visible.
 
-Double-click `launcher\FocusWatch.vbs`. It starts the bridge and the UI in the background, then opens FocusWatch in its own window. The first launch can take up to a minute.
+**Step 5: Open FocusWatch.** In the `focus` folder, open `launcher` and double-click **FocusWatch.vbs**. The first start can take up to a minute.
 
-To get a desktop shortcut with the FocusWatch icon:
+To get a FocusWatch icon on your desktop, run this once in the terminal from the `focus` folder:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File launcher\Create-Desktop-Shortcut.ps1
 ```
 
-Once the app is running, the extension popup should switch from **OFFLINE** to **ONLINE**.
+**Check it worked:** click the FocusWatch icon in your browser toolbar. It should say **ONLINE**.
 
-**4. (Recommended) Set up ActivityWatch**
+### Mac and Linux
 
-Install [ActivityWatch](https://activitywatch.net) and leave it running. FocusWatch reads from it at `127.0.0.1:5600` to show which apps and windows you used. For per-URL browser tracking, also install the ActivityWatch [web watcher extension](https://github.com/ActivityWatch/aw-watcher-web).
+The double-click launcher is Windows-only. On Mac or Linux, open two terminal windows in the `focus` folder and run one line in each:
 
-## Usage
+```bash
+node apps/desktop/bridge-standalone.cjs
+pnpm dev:desktop
+```
 
-1. Open FocusWatch and add a task, or start a session straight away.
-2. Click **Start session**, describe the output you'll produce, pick a duration, and choose whether to block websites.
-3. Work. Blocked sites redirect to the FocusWatch block page, and the floating widget keeps the timer visible.
-4. When the session ends, confirm whether you delivered the output, then review your day on the dashboard.
+Then open <http://localhost:1420> in your browser.
 
-### Launcher scripts (Windows)
+---
 
-| Script | What it does |
+## Everyday use
+
+1. Open FocusWatch from the desktop icon.
+2. Add a task, or go straight to starting a session.
+3. Write what you'll finish, pick a time, and choose whether to block websites.
+4. Work. The floating timer shows how long you have left.
+5. When the time's up, say whether you finished, then check your stats.
+
+**To close FocusWatch completely,** right-click `launcher\Stop-FocusWatch.ps1` and choose **Run with PowerShell**.
+
+### Where your data is saved
+
+- Your **sessions, tasks and settings** are saved inside your browser. ⚠️ If you clear your browser's site data for `localhost`, they'll be erased.
+- The **session that's currently running** is also saved in a file, so it survives a restart.
+- The **app history** recorded by ActivityWatch stays in ActivityWatch.
+
+---
+
+## Something not working?
+
+| What you see | What to do |
 |---|---|
-| `launcher\FocusWatch.vbs` | Starts everything and opens the app window. Safe to run again if it's already running. |
-| `launcher\Stop-FocusWatch.ps1` | Stops the bridge and UI servers. |
-| `launcher\Restart-Bridge.ps1` | Restarts only the bridge. A running session survives. |
-| `launcher\Create-Desktop-Shortcut.ps1` | Creates the desktop shortcut. |
+| The extension says **OFFLINE** | FocusWatch isn't running. Open it from the desktop icon, then click **Force resync** in the extension. If it still says OFFLINE, run `launcher\Restart-Bridge.ps1`. |
+| **"Port 1420 is already in use"** | FocusWatch is already open. Run `launcher\Stop-FocusWatch.ps1`, then open it again. |
+| The time charts are **empty** | ActivityWatch isn't installed or isn't running. Start it, then check the **Diagnostics** page in FocusWatch. |
+| **"Dependencies are not installed"** | Run `pnpm install` and then `pnpm setup` in the `focus` folder. |
+| Blocking doesn't work | Make sure the extension is turned on in `chrome://extensions` and the session has **Block websites** ticked. |
 
-Logs are written to `launcher\logs\`.
-
-### macOS / Linux
-
-The launcher scripts are Windows-only, but the app itself is cross-platform. Run these from the repo root in two terminals:
-
-```bash
-node apps/desktop/bridge-standalone.cjs   # extension bridge on 127.0.0.1:47777
-pnpm dev:desktop                          # UI on http://localhost:1420
-```
-
-Then open <http://localhost:1420>.
-
-## Where your data lives
-
-- **Sessions, tasks, and settings** are stored in your browser's local storage for `http://localhost:1420`. Clearing that site's data in your browser will erase them.
-- **The active session and pending screenshots** are kept by the bridge in `apps/desktop/bridge-state.json` and `apps/desktop/bridge-artifacts/`.
-- **Activity history** stays in ActivityWatch's own local database.
-
-All of these files are git-ignored. FocusWatch makes no outbound network requests.
-
-## Ports
-
-| Port | Used by |
-|---|---|
-| `1420` | FocusWatch UI |
-| `47777` | Local bridge between the app and the extension |
-| `5600` | ActivityWatch (optional) |
-
-## Troubleshooting
-
-- **Extension shows OFFLINE** — the bridge isn't running. Start FocusWatch, or run `launcher\Restart-Bridge.ps1`, then click **Force resync** in the popup.
-- **"Port 1420 is already in use"** — FocusWatch is probably already running. Run `launcher\Stop-FocusWatch.ps1` and launch it again.
-- **Empty activity charts** — ActivityWatch isn't running or isn't reachable at `127.0.0.1:5600`. The Diagnostics screen shows what's connected.
-- **"Dependencies are not installed"** — run `pnpm install` and `pnpm setup` in the repo root.
-- **Extension changes not taking effect** — after `pnpm build:extension`, click **Reload** on the extension in `chrome://extensions`.
-
-## Development
-
-```bash
-pnpm test              # run the test suite (vitest)
-pnpm build:packages    # rebuild the shared packages after changing them
-pnpm dev:extension     # rebuild the extension on every change
-pnpm dev:desktop       # UI dev server with hot reload
-```
-
-### Project structure
-
-```text
-apps/
-  desktop/        React + Vite UI, local bridge (bridge-standalone.cjs), Tauri shell (src-tauri/)
-  extension/      Manifest V3 extension for Chrome / Edge
-packages/
-  shared-types/         shared TypeScript types and Zod schemas
-  domain-rules/         URL sanitizing, domain parsing, site classification
-  score-engine/         focus score and context-switching analysis
-  activity-normalizer/  turns ActivityWatch events into activity records
-launcher/         Windows launch / stop scripts
-tests/            vitest suite
-docs/             original product spec and implementation plan
-```
-
-### Native desktop build (experimental)
-
-`apps/desktop/src-tauri` contains a [Tauri 2](https://tauri.app) shell that wraps the same UI in a native window and stores data in SQLite. It requires the [Rust toolchain and Tauri prerequisites](https://tauri.app/start/prerequisites/). The browser-based launcher above is the supported way to run FocusWatch.
-
-```bash
-cd apps/desktop
-pnpm tauri dev
-```
+---
 
 ## What I'd do differently
 
 <!-- Draft based on the current code. Rewrite in your own words. -->
 
-- **One bridge instead of three.** The extension bridge exists as a Vite dev plugin, a standalone Node server, and a Rust/warp server inside Tauri. They drifted apart, and the launcher has to make sure the right one wins port 47777. I'd write it once and have every runtime share it.
-- **A real database from day one.** In browser mode, sessions and tasks live in `localStorage`, so clearing site data wipes your history. I'd use SQLite (or IndexedDB at minimum) everywhere, not only in the Tauri build.
-- **Commit to one runtime.** I started with Tauri, then ended up running the UI in a Chrome app window through a PowerShell launcher because it was faster to iterate on. That left the native build half-maintained and the launcher Windows-only.
-- **Smaller components.** Some screens grew past 1,000 lines (`TaskListScreen.tsx`). Splitting them early would have made changes much less risky.
-- **Fewer features, sooner.** The extension picked up tab aging, eye breaks, a note drawer, and a DOM sanitizer, which is now disabled. The core loop (start session → block → verify output) is what I actually use every day.
+- **Write the connector once.** I ended up with three versions of it (one for development, one standalone, one for the native app). They drifted apart, and keeping them in sync is a pain.
+- **Use a proper database from the start.** Saving everything inside the browser was quick to build, but clearing your browser data wipes your history.
+- **Pick one way to run the app.** I started building a native desktop app, then switched to running it in a browser window because it was faster to iterate on. The native version is now half-finished and the launcher only works on Windows.
+- **Keep files small.** Some screens grew past 1,000 lines of code, which makes every change riskier.
+- **Ship less, sooner.** The extension collected lots of extras: tab sleeping, eye breaks, a notepad, and a page cleaner that's now switched off. The part I actually use every day is simple: start a session, block distractions, check whether I delivered.
+
+---
+
+## For developers
+
+<details>
+<summary><b>Tech stack, project layout and commands</b></summary>
+
+### Tech stack
+
+| Part | Built with |
+|---|---|
+| App | React 19, TypeScript, Vite, Tailwind CSS, Zustand, Recharts |
+| Extension | Chrome Manifest V3, React |
+| Connector | Plain Node.js HTTP server on `127.0.0.1:47777` (no dependencies) |
+| Activity data | [ActivityWatch](https://activitywatch.net) REST API on port `5600` |
+| Shared logic | pnpm workspace packages (site rules, focus score, event processing, types) |
+| Native app *(experimental)* | Tauri 2 (Rust) + SQLite |
+| Tests | Vitest |
+
+### Project layout
+
+```text
+apps/
+  desktop/      the app (React), the connector (bridge-standalone.cjs), native shell (src-tauri/)
+  extension/    the browser extension
+packages/
+  shared-types/         shared TypeScript types
+  domain-rules/         URL cleaning and site classification
+  score-engine/         focus score and tab-switching analysis
+  activity-normalizer/  turns ActivityWatch data into activity records
+launcher/       Windows start / stop scripts
+tests/          automated tests
+docs/           original design spec and build plan
+```
+
+### Commands
+
+```bash
+pnpm test              # run the tests
+pnpm build:packages    # rebuild the shared packages after changing them
+pnpm dev:extension     # rebuild the extension whenever you save
+pnpm dev:desktop       # run the app with live reload
+```
+
+After rebuilding the extension, click **Reload** on it in `chrome://extensions`.
+
+### Ports
+
+| Port | What uses it |
+|---|---|
+| `1420` | The app |
+| `47777` | The connector |
+| `5600` | ActivityWatch |
+
+### Native desktop app (experimental)
+
+`apps/desktop/src-tauri` wraps the same app in a native window using [Tauri](https://tauri.app). It needs [Rust and the Tauri prerequisites](https://tauri.app/start/prerequisites/). Run it with `cd apps/desktop && pnpm tauri dev`.
+
+</details>
+
+---
 
 ## Contributing
 
-Issues and pull requests are welcome. Please run `pnpm test` before opening a PR.
+Issues and pull requests are welcome. Please run `pnpm test` before opening a pull request.
 
-The repo includes a pre-commit hook that runs [gitleaks](https://github.com/gitleaks/gitleaks) so secrets never get committed. Enable it once after cloning:
+To make sure no passwords or API keys ever get committed, the repo includes a [gitleaks](https://github.com/gitleaks/gitleaks) check that runs before every commit. Turn it on once after cloning:
 
 ```bash
 git config core.hooksPath .githooks
 ```
 
-CI runs the same gitleaks scan on every push and pull request.
+The same check also runs on GitHub for every push and pull request.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Free to use, change and share.
